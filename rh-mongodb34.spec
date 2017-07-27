@@ -25,7 +25,7 @@
 Summary:	Package that installs %{scl}
 Name:		%{scl}
 Version:	3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		Applications/File
 # template of man page with RPM macros to be expanded
@@ -238,7 +238,7 @@ export CPATH="%{_includedir}\${CPATH:+:\${CPATH}}"
 # For libraries during build
 export LIBRARY_PATH="%{_libdir}\${LIBRARY_PATH:+:\${LIBRARY_PATH}}"
 # For libraries during linking
-​export LD_LIBRARY_PATH="%{_libdir}\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}"
+export LD_LIBRARY_PATH="%{_libdir}\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}"
 # For man pages; empty field makes man to consider also standard path
 export MANPATH="%{_mandir}:\${MANPATH:-}"
 # For Java Packages Tools to locate java.conf
@@ -246,7 +246,7 @@ export JAVACONFDIRS="%{_sysconfdir}/java\${JAVACONFDIRS:+:}\${JAVACONFDIRS:-}"
 # For XMvn to locate its configuration file(s)
 export XDG_CONFIG_DIRS="%{_sysconfdir}/xdg:\${XDG_CONFIG_DIRS:-/etc/xdg}"
 # For systemtap
-​export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:%{_mandir}}"
+export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:%{_mandir}}"
 # For pkg-config
 export PKG_CONFIG_PATH="%{_libdir}/pkgconfig\${PKG_CONFIG_PATH:+:\${PKG_CONFIG_PATH}}"
 # For Java RPM generators
@@ -347,6 +347,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Thu Jun 8 2017 Marek Skalicky <mskalick@redhat.com> - 3.0-2
+- Remove odd chars from enable script
+
 * Mon Jun 5 2017 Marek Skalicky <mskalick@redhat.com> - 3.0-1
 - Initial commit (converted rh-mongodb32.spec)
 - Use recommended softwarecollection.org way to redefine env variables in enable script
