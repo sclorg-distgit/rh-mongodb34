@@ -22,17 +22,11 @@
 %global scl_upper %{lua:print(string.upper(string.gsub(rpm.expand("%{scl}"), "-", "_")))}
 %endif
 
-%if 0%{?rhel} >= 7
-%global scl_java_runtime rh-maven35
-%else
-%global scl_java_runtime rh-java-common
-%endif
-
 
 Summary:	Package that installs %{scl}
 Name:		%{scl}
 Version:	3.0
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv2+
 Group:		Applications/File
 # template of man page with RPM macros to be expanded
@@ -43,11 +37,8 @@ Requires:       %{name}-runtime = %{version}
 Requires:	scl-utils
 Requires:	%{?scl_prefix}mongodb-server
 BuildRequires:	scl-utils-build, help2man
-
-BuildRequires:	%{?scl_java_runtime}-scldevel
-BuildRequires:	%{?scl_java_runtime}-javapackages-local
-%if 0%{?rhel} < 7
-BuildRequires:	rh-maven33-scldevel
+%if 0%{?rhel} >= 7
+BuildRequires:	rh-maven35-scldevel
 %endif
 
 %description
@@ -62,8 +53,6 @@ server on your system
 Summary:	Package that handles %{scl} Software Collection.
 Group:		Applications/File
 Requires:	scl-utils
-Requires:       %{?scl_java_runtime}-runtime
-Requires:       %{?scl_java_runtime}-javapackages-tools
 Requires(post):	policycoreutils-python, libselinux-utils
 
 %description runtime
@@ -74,6 +63,9 @@ Summary:	Package shipping basic build configuration
 Requires:	scl-utils-build
 Requires:	scl-utils-build-helpers
 Requires:	%{name}-scldevel = %{version}
+%if 0%{?rhel} >= 7
+Requires:	rh-maven35-scldevel
+%endif
 Group:		Applications/File
 
 %description build
@@ -84,7 +76,6 @@ Package shipping essential configuration macros to build
 Summary:	Package shipping development files for %{scl}.
 Group:		Applications/File
 Requires:       %{name}-runtime = %{version}
-Requires:       %{?scl_java_runtime}-scldevel
 
 %description scldevel
 Development files for %{scl} (useful e.g. for hierarchical collection
@@ -123,7 +114,6 @@ sed -i "s|'|\\\\N'39'|g" %{?scl_name}.7
 
 # create enable scriptlet that sets correct environment for collection
 cat << EOF | tee -a %{buildroot}%{?_scl_scripts}/enable
-. /opt/rh/%{scl_java_runtime}/enable
 # For binaries
 export PATH="%{_bindir}:%{_sbindir}\${PATH:+:\${PATH}}"
 # For header files
@@ -222,6 +212,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Fri Jul 21 2017 Marek Skalický <mskalick@redhat.com> - 3.0-10
+- Remove rh-maven35 dependency
+
 * Mon Jun 26 2017 Marek Skalický <mskalick@redhat.com> - 3.0-9
 - Add missing directory ownership
 
