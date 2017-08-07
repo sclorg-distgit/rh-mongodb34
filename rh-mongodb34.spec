@@ -32,7 +32,7 @@
 Summary:	Package that installs %{scl}
 Name:		%{scl}
 Version:	3.0
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv2+
 Group:		Applications/File
 # template of man page with RPM macros to be expanded
@@ -159,15 +159,6 @@ cat >> %{buildroot}%{_scl_scripts}/service-environment << EOF
 %{scl_upper}_SCLS_ENABLED='%{scl}'
 EOF
 
-# Create java/maven directories so that they'll get properly owned.
-# These are listed in the scl_files macro. See also: RHBZ#1057169
-install -d -m 755 %{buildroot}%{_javadir}
-install -d -m 755 %{buildroot}%{_prefix}/lib/java
-install -d -m 755 %{buildroot}%{_javadocdir}
-install -d -m 755 %{buildroot}%{_mavenpomdir}
-install -d -m 755 %{buildroot}%{_datadir}/maven-effective-poms
-install -d -m 755 %{buildroot}%{_mavendepmapfragdir}
-
 # install generated man page
 install -d -m 755               %{buildroot}%{_mandir}/man7
 install -p -m 644 %{?scl_name}.7 %{buildroot}%{_mandir}/man7/
@@ -175,9 +166,11 @@ install -p -m 644 %{?scl_name}.7 %{buildroot}%{_mandir}/man7/
 # create directory for license
 install -d -m 755 %{buildroot}%{_licensedir}
 
-# create directory for golang code
+# create directory not create by scl_install
 install -d -m 755 %{buildroot}%{_datadir}/gocode
 install -d -m 755 %{buildroot}%{_datadir}/gocode/src
+install -d -m 755 %{buildroot}%{_libdir}/cmake
+install -d -m 755 %{buildroot}%{_libdir}/pkgconfig
 
 # generate rpm macros file for depended collections
 cat << EOF | tee -a %{buildroot}%{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
@@ -219,6 +212,7 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %dir %{_datadir}/gocode
 %dir %{_datadir}/gocode/src
 
+
 %files build
 %license LICENSE
 %{_root_sysconfdir}/rpm/macros.%{scl}-config
@@ -228,6 +222,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Mon Jun 26 2017 Marek Skalický <mskalick@redhat.com> - 3.0-9
+- Add missing directory ownership
+
 * Mon Jun 26 2017 Marek Skalický <mskalick@redhat.com> - 3.0-8
 - Install javapackages-local for building
 
