@@ -25,7 +25,7 @@
 Summary:	Package that installs %{scl}
 Name:		%{scl}
 Version:	3.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 Group:		Applications/File
 # template of man page with RPM macros to be expanded
@@ -65,6 +65,7 @@ Package shipping essential scripts to work with %{scl} Software Collection.
 %package build
 Summary:	Package shipping basic build configuration
 Requires:	scl-utils-build
+Requires:	scl-utils-build-helpers
 Requires:	%{name}-scldevel = %{version}
 Group:		Applications/File
 
@@ -347,6 +348,9 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
 %changelog
+* Fri Jun 23 2017 Marek Skalický <mskalick@redhat.com> - 3.0-4
+- Add scl-utils-build-helpers build dependency
+
 * Tue Jun 20 2017 Marek Skalický <mskalick@redhat.com> - 3.0-3
 - Add java configuration back
 
