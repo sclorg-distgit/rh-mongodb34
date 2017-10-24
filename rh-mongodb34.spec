@@ -26,7 +26,7 @@
 Summary:	Package that installs %{scl}
 Name:		%{scl}
 Version:	3.0
-Release:	11%{?dist}
+Release:	14%{?dist}
 License:	GPLv2+
 Group:		Applications/File
 # template of man page with RPM macros to be expanded
@@ -36,6 +36,8 @@ Source1:	LICENSE
 Requires:       %{name}-runtime = %{version}
 Requires:	scl-utils
 Requires:	%{?scl_prefix}mongodb-server
+Requires:	%{?scl_prefix}mongodb
+Requires:	%{?scl_prefix}mongo-tools
 BuildRequires:	scl-utils-build, help2man
 %if 0%{?rhel} >= 7
 BuildRequires:	rh-maven35-scldevel
@@ -81,6 +83,15 @@ Requires:       %{name}-runtime = %{version}
 %description scldevel
 Development files for %{scl} (useful e.g. for hierarchical collection
 building with transitive dependencies).
+
+%if 0%{?scl_syspaths_metapackage:1}
+%scl_syspaths_metapackage
+Requires: %{?scl_prefix}mongodb-syspaths
+Requires: %{?scl_prefix}mongodb-server-syspaths
+Requires: %{?scl_prefix}mongo-tools-syspaths
+
+%scl_syspaths_metapackage_description
+%endif
 
 %prep
 %setup -c -T
@@ -130,7 +141,7 @@ export JAVACONFDIRS="%{_sysconfdir}/java\${JAVACONFDIRS:+:}\${JAVACONFDIRS:-}"
 # For XMvn to locate its configuration file(s)
 export XDG_CONFIG_DIRS="%{_sysconfdir}/xdg:\${XDG_CONFIG_DIRS:-/etc/xdg}"
 # For systemtap
-export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:%{_mandir}}"
+export XDG_DATA_DIRS="%{_datadir}:\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 # For pkg-config
 export PKG_CONFIG_PATH="%{_libdir}/pkgconfig\${PKG_CONFIG_PATH:+:\${PKG_CONFIG_PATH}}"
 # For Java RPM generators
@@ -202,6 +213,10 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 # Directories for golang code (requrements of mongo-tools)
 %dir %{_datadir}/gocode
 %dir %{_datadir}/gocode/src
+# RHBZ#1482016 - missing ownership on aarch64 and ppc64le
+%dir %{_libdir}
+%dir %{_libdir}/cmake
+%dir %{_libdir}/pkgconfig
 
 
 %files build
@@ -212,7 +227,23 @@ restorecon -R %{_localstatedir} >/dev/null 2>&1 || :
 %license LICENSE
 %{_root_sysconfdir}/rpm/macros.%{scl_name_base}-scldevel
 
+%{?scl_syspaths_metapackage:%files syspaths}
+
 %changelog
+* Mon Sep 25 2017 Marek Skalický <mskalick@redhat.com> - 3.0-14
+- Add syspaths subpackage
+  Resolves: RHZB#1466870
+
+* Tue Aug 22 2017 Marek Skalický <mskalick@redhat.com> - 3.0-13
+- Fix ownership on aarch64 and ppc64le
+  Resolves: RHBZ#1482016
+- Add requirements for collection metapackage to install mongo shell and mongo-tools
+  Resolves: RHBZ#1483966
+
+* Tue Aug 22 2017 Marek Skalický <mskalick@redhat.com> - 3.0-12
+- Set XDG_DATA_DIRS correctly (to include /usr/share by default)
+  Resolves: RHBZ#1482012
+
 * Mon Aug 07 2017 Marek Skalický <mskalick@redhat.com> - 3.0-11
 - Add back missing rh-maven35-javapackages-local needed for scl_install_java
 
